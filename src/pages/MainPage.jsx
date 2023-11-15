@@ -12,6 +12,8 @@ const MainPage = () => {
   const [buttonActivity, setButtonActivity] = useState(false);
   const [result, setResult] = useState("");
 
+  console.log(errors);
+
   useEffect(() => {
     if (
       errors.amountError !== "none" ||
@@ -50,48 +52,76 @@ const MainPage = () => {
         [type + "Error"]: "! This field can not remain empty",
       }));
     } else if (isNaN(val)) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! This field must be a number",
-      }));
+      if (errors[type + "Error"] !== "! This field must be a number") {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! This field must be a number",
+        }));
+      }
     } else if (val < 0) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! This field can not be a negative number",
-      }));
+      if (
+        errors[type + "Error"] !== "! This field can not be a negative number"
+      ) {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! This field can not be a negative number",
+        }));
+      }
     } else if (type === "rate" && val > 25) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! Annual Interest Rate can not exceed 25%",
-      }));
+      if (
+        errors[type + "Error"] !== "! Annual Interest Rate can not exceed 25%"
+      ) {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! Annual Interest Rate can not exceed 25%",
+        }));
+      }
     } else if (type === "amount" && val < 9999) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! Loan Amount lower limit is 10,000 $ ",
-      }));
+      if (errors[type + "Error"] !== "! Loan Amount lower limit is 10,000 $") {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! Loan Amount lower limit is 10,000 $",
+        }));
+      }
     } else if (type === "term" && val % 1 !== 0) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! This field must be a integer",
-      }));
+      if (errors[type + "Error"] !== "! This field must be a integer") {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! This field must be a integer",
+        }));
+      }
     } else if (type === "term" && val > 30) {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "! Loan Term upper limit is 30 years",
-      }));
+      if (errors[type + "Error"] !== "! Loan Term upper limit is 30 years") {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "! Loan Term upper limit is 30 years",
+        }));
+      }
     } else {
-      setErrors((prev) => ({
-        ...prev,
-        [type + "Error"]: "none",
-      }));
+      if (errors[type + "Error"] !== "none") {
+        setErrors((prev) => ({
+          ...prev,
+          [type + "Error"]: "none",
+        }));
+      }
     }
   };
 
   const blur = (e, type) => {
+    if (e.target.value === "" && !errors[type + "Error"]) {
+      setErrors((prev) => ({
+        ...prev,
+        [type + "Error"]: "! This field can not remain empty",
+      }));
+    }
+
     const capitalizedStr = type[0].toUpperCase() + type.slice(1);
     const mergedString = "is" + capitalizedStr + "Touched";
     if (!errors[mergedString]) {
-      setErrors({ ...errors, ["is" + capitalizedStr + "Touched"]: true });
+      setErrors((prev) => ({
+        ...prev,
+        ["is" + capitalizedStr + "Touched"]: true,
+      }));
     }
 
     const val = e.target.value.replaceAll(",", "");
